@@ -19,40 +19,42 @@
 
   <header class="topbar" id="topbar">
     <div class="wrap inner">
-      <button class="navtoggle" id="navToggle" aria-label="Menu" aria-expanded="false">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M4 7h16M4 12h16M4 17h16" />
-        </svg>
+      <button class="navtoggle" id="navToggle" aria-label="Apri il menu" aria-expanded="false" aria-controls="topnav">
+        <span class="navtoggle-bar"></span>
+        <span class="navtoggle-bar"></span>
+        <span class="navtoggle-bar"></span>
       </button>
       <nav class="topnav" id="topnav" aria-label="Sezioni">
         <a href="#premessa">Premessa</a><a href="#metodo">Struttura</a><a href="#aree">Le aree</a><a
           href="#fonti">Fonti</a><a href="#dossier">Dossier</a><a href="#chiusura">Sintesi</a>
       </nav>
     </div>
+    <div class="nav-backdrop" id="navBackdrop"></div>
   </header>
 
   <section class="hero">
     <div class="wrap">
+      <img src="Asset/MiC_logo_esteso_BLU.svg" alt="Ministero della Cultura" class="hero-logo">
       <div class="hero-content">
-        <img src="Asset/MiC_logo_esteso_BLU.svg" alt="Ministero della Cultura" class="hero-logo">
-        <span class="mtag">CAPITALE ITALIANA DELLA CULTURA</span>
-        <h1 class="hero-title">Abaco di Accompagnamento alla Candidatura CIdC</h1>
+        <div class="hero-middle">
+          <span class="mtag">CAPITALE ITALIANA DELLA CULTURA</span>
+          <h1 class="hero-title">Abaco di Accompagnamento alla Candidatura CIdC</h1>
+        </div>
         <p class="hero-desc">Strumento di accompagnamento per le amministrazioni e i gruppi di lavoro impegnati in un percorso di candidatura. Otto aree tematiche raccolgono buone pratiche, errori ricorrenti e criteri di verifica desunti dall'analisi delle edizioni precedenti.</p>
       </div>
-    </div>
-  </section>
-
-  <section class="wrap" style="padding-top:40px">
-    <div class="stats">
-      <div class="stat reveal"><span class="lab">Aree tematiche<br>del documento</span><span class="n">08</span>
+      <div class="stats-wrap">
+        <div class="stats">
+          <div class="stat reveal"><span class="lab">Aree tematiche</span><span class="n">08</span>
+          </div>
+          <div class="stat reveal"><span class="lab">Punti di verifica</span><span class="n">40</span>
+          </div>
+          <div class="stat reveal"><span class="lab">Città analizzate<br>dal 2015 al 2025</span><span class="n">12+</span>
+          </div>
+          <div class="stat accent reveal"><span class="mtag">Il principio</span><span class="cap">Dichiarare una qualità non
+              equivale a possederla. Conta ciò che resta <strong style="color:var(--accent-ink)">verificabile</strong> al di
+              là del dossier.</span></div>
+        </div>
       </div>
-      <div class="stat reveal"><span class="lab">Punti di verifica</span><span class="n">40</span>
-      </div>
-      <div class="stat reveal"><span class="lab">Città analizzate<br>dal 2015 al 2025</span><span class="n">12+</span>
-      </div>
-      <div class="stat accent reveal"><span class="mtag">Il principio</span><span class="cap">Dichiarare una qualità non
-          equivale a possederla. Conta ciò che resta <strong style="color:var(--accent-ink)">verificabile</strong> al di
-          là del dossier.</span></div>
     </div>
   </section>
 
@@ -552,9 +554,19 @@
     }
     document.querySelectorAll('.chk-item').forEach(el => { el.addEventListener('click', () => toggle(el)); el.addEventListener('keydown', e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toggle(el) } }) });
     document.getElementById('printBtn').addEventListener('click', () => { document.querySelectorAll('.row').forEach(o => { if (o.dataset.open !== 'true') setOpen(o, true) }); setTimeout(() => print(), 400) });
-    const nt = document.getElementById('navToggle'), tn = document.getElementById('topnav');
-    nt.addEventListener('click', () => { const o = tn.classList.toggle('open'); nt.setAttribute('aria-expanded', o) });
-    tn.querySelectorAll('a').forEach(a => a.addEventListener('click', () => { tn.classList.remove('open'); nt.setAttribute('aria-expanded', 'false') }));
+    const nt = document.getElementById('navToggle'), tn = document.getElementById('topnav'), nb = document.getElementById('navBackdrop');
+    function setMenu(open) {
+      tn.classList.toggle('open', open);
+      nb.classList.toggle('open', open);
+      nt.setAttribute('aria-expanded', open);
+      nt.setAttribute('aria-label', open ? 'Chiudi il menu' : 'Apri il menu');
+      document.body.classList.toggle('nav-locked', open);
+    }
+    nt.addEventListener('click', () => setMenu(nt.getAttribute('aria-expanded') !== 'true'));
+    nb.addEventListener('click', () => setMenu(false));
+    tn.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setMenu(false)));
+    addEventListener('keydown', e => { if (e.key === 'Escape' && nt.getAttribute('aria-expanded') === 'true') setMenu(false) });
+    addEventListener('resize', () => { if (innerWidth > 640 && nt.getAttribute('aria-expanded') === 'true') setMenu(false) });
     const tb = document.getElementById('topbar');
     addEventListener('scroll', () => {
       tb.classList.toggle('scrolled', scrollY > 10);
